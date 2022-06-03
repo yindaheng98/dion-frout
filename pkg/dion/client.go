@@ -4,11 +4,11 @@ import (
 	nrpc "github.com/cloudwebrtc/nats-grpc/pkg/rpc"
 	log "github.com/pion/ion-log"
 	"github.com/yindaheng98/dion/config"
+	"github.com/yindaheng98/dion/pkg/islb"
 	"github.com/yindaheng98/dion/pkg/sfu"
 	"github.com/yindaheng98/dion/pkg/sxu/room"
 	pb2 "github.com/yindaheng98/dion/proto"
 	"github.com/yindaheng98/dion/util"
-	"github.com/yindaheng98/dion/util/ion"
 	"sync/atomic"
 )
 
@@ -20,7 +20,7 @@ type conf struct {
 }
 
 type HealthWithSubscriber struct {
-	*ion.Node
+	*islb.Node
 	sub     *sfu.Subscriber
 	conf    atomic.Value
 	current uint32
@@ -55,14 +55,14 @@ func (h HealthWithSubscriber) Switch(session *pb2.ClientNeededSession, peerNID s
 }
 
 type Client struct {
-	*ion.Node
+	*islb.Node
 	HealthFactory HealthWithSubscriber
 	SFU           *sfu.Subscriber
 	Room          *room.Client
 }
 
 func NewClient(uid string) *Client {
-	node := ion.NewNode(uid)
+	node := islb.NewNode(uid)
 	sub := sfu.NewSubscriber(&node)
 	health := HealthWithSubscriber{
 		Node:    &node,

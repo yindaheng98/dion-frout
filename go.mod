@@ -6,7 +6,7 @@ require (
 	fyne.io/fyne/v2 v2.1.4
 	github.com/cloudwebrtc/nats-grpc v1.0.0
 	github.com/pion/ion-log v1.2.2
-	github.com/yindaheng98/dion v1.2.2-0.20220603073141-e22f83bf6548
+	github.com/yindaheng98/dion v1.2.2-0.20220603135824-c099251fd8ea
 )
 
 require (
