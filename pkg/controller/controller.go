@@ -23,7 +23,7 @@ func Control(a fyne.App, cli Client) {
 	addr, path := Init(a)
 	log.Println("Connecting: ", addr)
 	if err := cli.Connect(addr, path); err != nil {
-		log.Fatalln(err)
+		log.Fatalf("Cannot Connect: %+v\n", err)
 	}
 
 	w := a.NewWindow("dion system")
