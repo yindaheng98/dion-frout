@@ -54,7 +54,6 @@ func (t TestClient) SwitchSession(session *pb.ClientNeededSession) {
 
 func main() {
 	a := app.New()
-	w := a.NewWindow("dion system")
-	go controller.Control(w, NewTestClient(4))
-	w.ShowAndRun()
+	go controller.Control(a, NewTestClient(4))
+	a.Run()
 }

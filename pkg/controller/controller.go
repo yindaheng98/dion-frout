@@ -3,6 +3,7 @@ package controller
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	"github.com/cloudwebrtc/nats-discovery/pkg/discovery"
 	pb "github.com/yindaheng98/dion/proto"
@@ -17,16 +18,18 @@ type Client interface {
 	SwitchSession(session *pb.ClientNeededSession)
 }
 
-func Control(w fyne.Window, cli Client) {
-	addr := GetNatsAddr(w)
+func Control(a fyne.App, cli Client) {
+	<-time.After(time.Second)
+	addr := GetNatsAddr(a)
 	log.Println("Connecting: ", addr)
 	if err := cli.Connect(addr); err != nil {
 		log.Fatalln(err)
 	}
-	ShowNodes(w, cli, SessionEntry(cli))
+	ShowNodes(a, cli, SessionEntry(cli))
 }
 
-func GetNatsAddr(w fyne.Window) string {
+func GetNatsAddr(a fyne.App) string {
+	w := a.NewWindow("dion system")
 	addr := "nats://127.0.0.1:4222"
 	label := widget.NewLabel("NATS Address:")
 	input := widget.NewEntry()
@@ -39,7 +42,12 @@ func GetNatsAddr(w fyne.Window) string {
 		addrCh <- addr
 	})
 	w.SetContent(container.NewVBox(label, input, connect))
-	return <-addrCh
+	w.Resize(fyne.NewSize(200, 100))
+	w.Show()
+	addr = <-addrCh
+	w.Hide()
+	w.Close()
+	return addr
 }
 
 func SessionEntry(cli Client) *fyne.Container {
@@ -47,12 +55,11 @@ func SessionEntry(cli Client) *fyne.Container {
 	userlabel := widget.NewLabel("User:")
 	userinput := widget.NewEntry()
 	userinput.SetPlaceHolder(user)
-	usercontainer := container.NewHBox(userlabel, userinput)
 	session := "stupid"
 	sessionlabel := widget.NewLabel("Session:")
 	sessioninput := widget.NewEntry()
 	sessioninput.SetPlaceHolder(session)
-	sessioncontainer := container.NewHBox(sessionlabel, sessioninput)
+	inputcontainer := container.New(layout.NewFormLayout(), userlabel, userinput, sessionlabel, sessioninput)
 	switchbutton := widget.NewButton("Switch!", func() {
 		if userinput.Text != "" {
 			user = userinput.Text
@@ -65,10 +72,12 @@ func SessionEntry(cli Client) *fyne.Container {
 			Session: session,
 		})
 	})
-	return container.NewVBox(usercontainer, sessioncontainer, switchbutton)
+	box := container.NewVBox(inputcontainer, switchbutton)
+	return box
 }
 
-func ShowNodes(w fyne.Window, cli Client, objects ...fyne.CanvasObject) {
+func ShowNodes(a fyne.App, cli Client, objects ...fyne.CanvasObject) {
+	w := a.NewWindow("dion system")
 	log.Println("Showing nodes")
 	for {
 		log.Println("Updating node list")
@@ -92,7 +101,9 @@ func ShowNodes(w fyne.Window, cli Client, objects ...fyne.CanvasObject) {
 					cli.SwitchNode(ids[i])
 				}
 			})
-		w.SetContent(container.NewVBox(append([]fyne.CanvasObject{list}, objects...)...))
+		w.SetContent(container.NewVBox(append(objects, list)...))
+		w.Resize(fyne.NewSize(800, 600))
+		w.Show()
 		<-time.After(time.Second)
 	}
 }
