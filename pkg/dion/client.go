@@ -78,9 +78,11 @@ func (h *Client) GetNodes() map[string]discovery.Node {
 }
 
 func (h *Client) SwitchNode(id string) {
+	fmt.Printf("Switch node to: %s\n", id)
 	h.sub.SwitchNode(id, map[string]interface{}{})
 }
 
 func (h *Client) SwitchSession(session *pb.ClientNeededSession) {
+	fmt.Printf("Switch session to: %+v\n", session)
 	h.sub.SwitchSession(session)
 }
