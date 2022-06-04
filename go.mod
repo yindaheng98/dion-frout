@@ -5,8 +5,7 @@ go 1.18
 require (
 	fyne.io/fyne/v2 v2.1.4
 	github.com/cloudwebrtc/nats-discovery v0.3.0
-	github.com/cloudwebrtc/nats-grpc v1.0.0
-	github.com/pion/ion-log v1.2.2
+	github.com/pion/webrtc/v3 v3.1.25
 	github.com/yindaheng98/dion v1.2.2-0.20220603144300-a49f156146eb
 )
 
@@ -14,10 +13,9 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bep/debounce v1.2.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
+	github.com/cloudwebrtc/nats-grpc v1.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
-	github.com/ebml-go/ebml v0.0.0-20160925193348-ca8851a10894 // indirect
-	github.com/ebml-go/webm v0.0.0-20160924163542-629e38feef2a // indirect
 	github.com/fredbi/uri v0.0.0-20181227131451-3dcfdacbaaf3 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/fullstorydev/grpcurl v1.8.0 // indirect
@@ -46,13 +44,12 @@ require (
 	github.com/nats-io/nuid v1.0.1 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.0-beta.8 // indirect
-	github.com/petar/GoLLRB v0.0.0-20210522233825-ae3b015fd3e9 // indirect
 	github.com/pion/datachannel v1.5.2 // indirect
 	github.com/pion/dtls/v2 v2.1.3 // indirect
 	github.com/pion/ice/v2 v2.2.2 // indirect
 	github.com/pion/interceptor v0.1.10 // indirect
 	github.com/pion/ion v1.10.0 // indirect
-	github.com/pion/ion-sdk-go v0.7.0 // indirect
+	github.com/pion/ion-log v1.2.2 // indirect
 	github.com/pion/ion-sfu v1.11.0 // indirect
 	github.com/pion/logging v0.2.2 // indirect
 	github.com/pion/mdns v0.0.5 // indirect
@@ -66,7 +63,6 @@ require (
 	github.com/pion/transport v0.13.0 // indirect
 	github.com/pion/turn/v2 v2.0.8 // indirect
 	github.com/pion/udp v0.1.1 // indirect
-	github.com/pion/webrtc/v3 v3.1.25 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/prometheus/client_golang v1.11.0 // indirect
@@ -97,6 +93,7 @@ require (
 	google.golang.org/genproto v0.0.0-20220407144326-9054f6ed7bac // indirect
 	google.golang.org/grpc v1.45.0 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
@@ -104,3 +101,5 @@ require (
 )
 
 replace github.com/cloudwebrtc/nats-discovery v0.3.0 => github.com/yindaheng98/nats-discovery v0.3.1-0.20220601014014-e6a5369ace55
+
+replace github.com/pion/ion-sfu v1.11.0 => github.com/yindaheng98/ion-sfu v1.11.1-0.20220521131211-10a33cc613d5

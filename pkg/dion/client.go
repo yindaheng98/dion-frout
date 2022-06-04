@@ -1,87 +1,86 @@
 package client
 
 import (
-	nrpc "github.com/cloudwebrtc/nats-grpc/pkg/rpc"
-	log "github.com/pion/ion-log"
-	"github.com/yindaheng98/dion/config"
+	"bufio"
+	"fmt"
+	"github.com/cloudwebrtc/nats-discovery/pkg/discovery"
+	"github.com/pion/ion/pkg/proto"
+	"github.com/pion/webrtc/v3"
+	"github.com/pion/webrtc/v3/pkg/media/ivfwriter"
 	"github.com/yindaheng98/dion/pkg/islb"
 	"github.com/yindaheng98/dion/pkg/sfu"
-	"github.com/yindaheng98/dion/pkg/sxu/room"
-	pb2 "github.com/yindaheng98/dion/proto"
+	pb "github.com/yindaheng98/dion/proto"
 	"github.com/yindaheng98/dion/util"
-	"sync/atomic"
+	"io"
+	"log"
+	"os/exec"
 )
 
-type conf struct {
-	session    *pb2.ClientNeededSession
-	peerNID    string
-	parameters map[string]interface{}
-	version    uint32
-}
-
-type HealthWithSubscriber struct {
-	*islb.Node
-	sub     *sfu.Subscriber
-	conf    atomic.Value
-	current uint32
-}
-
-func (h HealthWithSubscriber) NewClient() *nrpc.Client {
-	c := h.conf.Load()
-	if c != nil {
-		return nil
-	}
-	peerNID, parameters, session := c.(conf).peerNID, c.(conf).parameters, c.(conf).session
-	client, err := h.NewNatsRPCClient(config.ServiceSXU, peerNID, parameters)
-	if err != nil {
-		log.Errorf("cannot NewNatsRPCClient: %v, try next", err)
-	}
-	current := atomic.LoadUint32(&h.current)
-	if current != c.(conf).version {
-		h.sub.SwitchNode(session, peerNID, parameters)
-		atomic.StoreUint32(&h.current, c.(conf).version)
-	}
-	return client
-}
-
-func (h HealthWithSubscriber) Switch(session *pb2.ClientNeededSession, peerNID string, parameters map[string]interface{}) {
-	current := atomic.LoadUint32(&h.current)
-	h.conf.Store(conf{
-		session:    session,
-		peerNID:    peerNID,
-		parameters: parameters,
-		version:    current + 1,
-	})
-}
-
 type Client struct {
-	*islb.Node
-	HealthFactory HealthWithSubscriber
-	SFU           *sfu.Subscriber
-	Room          *room.Client
+	islb.Node
+	watchExec util.SingleExec
+	sub       *sfu.Subscriber
 }
 
-func NewClient(uid string) *Client {
-	node := islb.NewNode(uid)
-	sub := sfu.NewSubscriber(&node)
-	health := HealthWithSubscriber{
-		Node:    &node,
-		sub:     sub,
-		current: 0,
+func (h *Client) Connect(addr, cmd string) error {
+	log.Println("Connecting......")
+	err := h.Node.Start(addr)
+	if err != nil {
+		return err
 	}
-	health.conf.Store(conf{
-		session: &pb2.ClientNeededSession{
-			Session: "stupid",
-			User:    util.RandomString(8),
-		},
-		peerNID:    "*",
-		parameters: map[string]interface{}{},
-		version:    0,
+	h.watchExec.Do(func() {
+		log.Println("Start watching......")
+		err := h.Node.Watch(proto.ServiceALL)
+		if err != nil {
+			log.Fatalf("Node.Watch(proto.ServiceALL) error %v\n", err)
+		}
 	})
-	return &Client{
-		Node:          &node,
-		HealthFactory: health,
-		SFU:           sfu.NewSubscriber(&node),
-		Room:          room.NewClient(health),
+	h.sub = sfu.NewSubscriber(&h.Node)
+	h.sub.OnTrack = func(remote *webrtc.TrackRemote, receiver *webrtc.RTPReceiver) {
+		log.Printf("OnTrack started: %+v\n", remote)
+		ffplay := exec.Command(cmd, "-f", "ivf", "-i", "pipe:0")
+		defer ffplay.Process.Kill()
+		stdin, stdout, err := util.GetStdPipes(ffplay)
+		if err != nil {
+			log.Fatalf("Cannot start ffplay: %+v\n", err)
+		}
+		go func(stdout io.ReadCloser) {
+			scanner := bufio.NewScanner(stdout)
+			for scanner.Scan() {
+				fmt.Println(scanner.Text())
+			}
+		}(stdout)
+		ivfWriter, err := ivfwriter.NewWith(stdin)
+		if err != nil {
+			log.Fatalf("Cannot create ivfwriter: %+v\n", err)
+		}
+
+		for {
+			// Read RTP packets being sent to Pion
+			rtp, _, readErr := remote.ReadRTP()
+			log.Println("Subscriber get a RTP Packet")
+			if readErr != nil {
+				log.Printf("Subscriber RTP Packet read error %+v\n", readErr)
+				return
+			}
+
+			if ivfWriterErr := ivfWriter.WriteRTP(rtp); ivfWriterErr != nil {
+				log.Printf("RTP Packet write error: %+v\n", ivfWriterErr)
+				return
+			}
+		}
 	}
+	return nil
+}
+
+func (h *Client) GetNodes() map[string]discovery.Node {
+	return h.Node.GetNeighborNodes()
+}
+
+func (h *Client) SwitchNode(id string) {
+	h.sub.SwitchNode(id, map[string]interface{}{})
+}
+
+func (h *Client) SwitchSession(session *pb.ClientNeededSession) {
+	h.sub.SwitchSession(session)
 }
