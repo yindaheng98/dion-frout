@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"context"
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -12,16 +13,16 @@ import (
 )
 
 type Client interface {
-	Connect(nats_addr string) error
+	Connect(nats_addr, ffplay_path string) error
 	GetNodes() map[string]discovery.Node
 	SwitchNode(id string)
 	SwitchSession(session *pb.ClientNeededSession)
 }
 
 func Control(a fyne.App, cli Client) {
-	addr := GetNatsAddr(a)
+	addr, path := Init(a)
 	log.Println("Connecting: ", addr)
-	if err := cli.Connect(addr); err != nil {
+	if err := cli.Connect(addr, path); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -37,26 +38,34 @@ func Control(a fyne.App, cli Client) {
 	w.Show()
 }
 
-func GetNatsAddr(a fyne.App) string {
+func Init(a fyne.App) (string, string) {
 	w := a.NewWindow("dion system")
 	addr := "nats://127.0.0.1:4222"
-	label := widget.NewLabel("NATS Address:")
-	input := widget.NewEntry()
-	input.SetPlaceHolder(addr)
-	addrCh := make(chan string)
+	addrlabel := widget.NewLabel("NATS Address:")
+	addrinput := widget.NewEntry()
+	addrinput.SetPlaceHolder(addr)
+	path := "ffplay"
+	pathlabel := widget.NewLabel("FFplay command:")
+	pathinput := widget.NewEntry()
+	pathinput.SetPlaceHolder(path)
+	ctx, cancel := context.WithCancel(context.Background())
 	connect := widget.NewButton("Connect!", func() {
-		if input.Text != "" {
-			addr = input.Text
+		if addrinput.Text != "" {
+			addr = addrinput.Text
 		}
-		addrCh <- addr
+		if pathinput.Text != "" {
+			path = pathinput.Text
+		}
+		cancel()
 	})
-	w.SetContent(container.NewVBox(label, input, connect))
-	w.Resize(fyne.NewSize(200, 100))
+	inputcontainer := container.New(layout.NewFormLayout(), addrlabel, addrinput, pathlabel, pathinput)
+	w.SetContent(container.NewVBox(inputcontainer, connect))
+	w.Resize(fyne.NewSize(400, 100))
 	w.Show()
-	addr = <-addrCh
+	<-ctx.Done()
 	w.Hide()
 	w.Close()
-	return addr
+	return addr, path
 }
 
 func SessionEntry(cli Client) *fyne.Container {

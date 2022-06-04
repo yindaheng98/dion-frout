@@ -29,8 +29,8 @@ func NewTestClient(n uint) TestClient {
 	return c
 }
 
-func (t TestClient) Connect(nats_addr string) error {
-	fmt.Println(nats_addr)
+func (t TestClient) Connect(addr, path string) error {
+	fmt.Println(addr, path)
 	return nil
 }
 
