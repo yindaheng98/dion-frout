@@ -4,16 +4,16 @@ go 1.18
 
 require (
 	fyne.io/fyne/v2 v2.1.4
+	github.com/cloudwebrtc/nats-discovery v0.3.0
 	github.com/cloudwebrtc/nats-grpc v1.0.0
 	github.com/pion/ion-log v1.2.2
-	github.com/yindaheng98/dion v1.2.2-0.20220603135824-c099251fd8ea
+	github.com/yindaheng98/dion v1.2.2-0.20220603144300-a49f156146eb
 )
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bep/debounce v1.2.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
-	github.com/cloudwebrtc/nats-discovery v0.3.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
 	github.com/ebml-go/ebml v0.0.0-20160925193348-ca8851a10894 // indirect
@@ -102,3 +102,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 )
+
+replace github.com/cloudwebrtc/nats-discovery v0.3.0 => github.com/yindaheng98/nats-discovery v0.3.1-0.20220601014014-e6a5369ace55

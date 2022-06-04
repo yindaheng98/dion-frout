@@ -7,6 +7,7 @@ import (
 	"github.com/cloudwebrtc/nats-discovery/pkg/discovery"
 	pb "github.com/yindaheng98/dion/proto"
 	"log"
+	"time"
 )
 
 type Client interface {
@@ -16,33 +17,56 @@ type Client interface {
 	SwitchSession(session *pb.ClientNeededSession)
 }
 
-type Controller struct {
-	cli Client
-}
-
-func NewController(cli Client) Controller {
-	return Controller{
-		cli: cli,
+func Control(w fyne.Window, cli Client) {
+	addr := GetNatsAddr(w)
+	log.Println("Connecting: ", addr)
+	if err := cli.Connect(addr); err != nil {
+		log.Fatalln(err)
 	}
+	ShowNodes(w, cli)
 }
 
-func Control(a fyne.App, cli Client) {
-}
-
-func GetNatsAddr(a fyne.App) string {
+func GetNatsAddr(w fyne.Window) string {
 	addr := "nats://127.0.0.1:4222"
-	w := a.NewWindow("dion System - Please give a NATS Address")
 	label := widget.NewLabel("NATS Address:")
 	input := widget.NewEntry()
 	input.SetPlaceHolder(addr)
+	addrCh := make(chan string)
 	connect := widget.NewButton("Connect!", func() {
 		if input.Text != "" {
 			addr = input.Text
 		}
-		log.Println("Connecting: ", addr)
-		w.Close()
+		addrCh <- addr
 	})
 	w.SetContent(container.NewVBox(label, input, connect))
-	w.ShowAndRun()
-	return addr
+	return <-addrCh
+}
+
+func ShowNodes(w fyne.Window, cli Client) {
+	log.Println("Showing nodes")
+	for {
+		log.Println("Updating node list")
+		var ids []string
+		var nodes []discovery.Node
+		for id, node := range cli.GetNodes() {
+			ids = append(ids, id)
+			nodes = append(nodes, node)
+		}
+		list := widget.NewList(
+			func() int {
+				return len(nodes)
+			},
+			func() fyne.CanvasObject {
+				return widget.NewButton("", func() {})
+			},
+			func(i widget.ListItemID, o fyne.CanvasObject) {
+				button := o.(*widget.Button)
+				button.SetText(ids[i])
+				button.OnTapped = func() {
+					cli.SwitchNode(ids[i])
+				}
+			})
+		w.SetContent(list)
+		<-time.After(time.Second)
+	}
 }
