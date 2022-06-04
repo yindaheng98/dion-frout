@@ -64,7 +64,6 @@ func Init(a fyne.App) (string, string) {
 	w.Show()
 	<-ctx.Done()
 	w.Hide()
-	w.Close()
 	return addr, path
 }
 

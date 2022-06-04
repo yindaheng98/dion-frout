@@ -8,6 +8,8 @@ import (
 	"github.com/yindaheng98/dion/algorithms/impl/random"
 	pb "github.com/yindaheng98/dion/proto"
 	"github.com/yindaheng98/dion/util"
+	"log"
+	"time"
 )
 
 type TestClient struct {
@@ -31,6 +33,8 @@ func NewTestClient(n uint) TestClient {
 
 func (t TestClient) Connect(addr, path string) error {
 	fmt.Println(addr, path)
+	<-time.After(3 * time.Second)
+	log.Println("Connecting: ", addr)
 	return nil
 }
 
