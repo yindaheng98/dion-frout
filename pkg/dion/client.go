@@ -51,11 +51,11 @@ func (h *Client) Connect(addr, cmd string) error {
 	h.sub.OnTrack = func(remote *webrtc.TrackRemote, receiver *webrtc.RTPReceiver) {
 		log.Printf("OnTrack started: %+v\n", remote)
 		ffplay := exec.Command(cmd, "-f", "ivf", "-i", "pipe:0")
-		defer ffplay.Process.Kill()
 		stdin, stdout, err := util.GetStdPipes(ffplay)
 		if err != nil {
 			log.Fatalf("Cannot start ffplay: %+v\n", err)
 		}
+		defer ffplay.Process.Kill()
 		go func(stdout io.ReadCloser) {
 			scanner := bufio.NewScanner(stdout)
 			for scanner.Scan() {
