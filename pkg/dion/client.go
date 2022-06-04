@@ -14,20 +14,32 @@ import (
 	"io"
 	"log"
 	"os/exec"
+	"sync"
 )
 
 type Client struct {
 	islb.Node
-	watchExec util.SingleExec
+	sync.Mutex
+	watchExec *util.SingleExec
 	sub       *sfu.Subscriber
 }
 
+func NewClient(id string) *Client {
+	return &Client{
+		Node:      islb.NewNode(id),
+		watchExec: util.NewSingleExec(),
+	}
+}
+
 func (h *Client) Connect(addr, cmd string) error {
+	h.Lock()
+	defer h.Unlock()
 	log.Println("Connecting......")
 	err := h.Node.Start(addr)
 	if err != nil {
 		return err
 	}
+	log.Println("Connected!")
 	h.watchExec.Do(func() {
 		log.Println("Start watching......")
 		err := h.Node.Watch(proto.ServiceALL)
@@ -70,19 +82,26 @@ func (h *Client) Connect(addr, cmd string) error {
 			}
 		}
 	}
+	log.Println("Connected!!!!")
 	return nil
 }
 
 func (h *Client) GetNodes() map[string]discovery.Node {
-	return h.Node.GetNeighborNodes()
+	h.Lock()
+	defer h.Unlock()
+	return h.GetNeighborNodes()
 }
 
 func (h *Client) SwitchNode(id string) {
+	h.Lock()
+	defer h.Unlock()
 	fmt.Printf("Switch node to: %s\n", id)
 	h.sub.SwitchNode(id, map[string]interface{}{})
 }
 
 func (h *Client) SwitchSession(session *pb.ClientNeededSession) {
+	h.Lock()
+	defer h.Unlock()
 	fmt.Printf("Switch session to: %+v\n", session)
 	h.sub.SwitchSession(session)
 }
