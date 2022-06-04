@@ -45,12 +45,11 @@ func (t TestClient) GetNodes() map[string]discovery.Node {
 }
 
 func (t TestClient) SwitchNode(id string) {
-	fmt.Printf("Switch to: %s\n", id)
+	fmt.Printf("Switch node to: %s\n", id)
 }
 
 func (t TestClient) SwitchSession(session *pb.ClientNeededSession) {
-	//TODO implement me
-	panic("implement me")
+	fmt.Printf("Switch session to: %+v\n", session)
 }
 
 func main() {

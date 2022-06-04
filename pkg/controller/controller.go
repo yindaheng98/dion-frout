@@ -23,7 +23,7 @@ func Control(w fyne.Window, cli Client) {
 	if err := cli.Connect(addr); err != nil {
 		log.Fatalln(err)
 	}
-	ShowNodes(w, cli)
+	ShowNodes(w, cli, SessionEntry(cli))
 }
 
 func GetNatsAddr(w fyne.Window) string {
@@ -42,7 +42,33 @@ func GetNatsAddr(w fyne.Window) string {
 	return <-addrCh
 }
 
-func ShowNodes(w fyne.Window, cli Client) {
+func SessionEntry(cli Client) *fyne.Container {
+	user := "stupid"
+	userlabel := widget.NewLabel("User:")
+	userinput := widget.NewEntry()
+	userinput.SetPlaceHolder(user)
+	usercontainer := container.NewHBox(userlabel, userinput)
+	session := "stupid"
+	sessionlabel := widget.NewLabel("Session:")
+	sessioninput := widget.NewEntry()
+	sessioninput.SetPlaceHolder(session)
+	sessioncontainer := container.NewHBox(sessionlabel, sessioninput)
+	switchbutton := widget.NewButton("Switch!", func() {
+		if userinput.Text != "" {
+			user = userinput.Text
+		}
+		if sessioninput.Text != "" {
+			session = sessioninput.Text
+		}
+		cli.SwitchSession(&pb.ClientNeededSession{
+			User:    user,
+			Session: session,
+		})
+	})
+	return container.NewVBox(usercontainer, sessioncontainer, switchbutton)
+}
+
+func ShowNodes(w fyne.Window, cli Client, objects ...fyne.CanvasObject) {
 	log.Println("Showing nodes")
 	for {
 		log.Println("Updating node list")
@@ -66,7 +92,7 @@ func ShowNodes(w fyne.Window, cli Client) {
 					cli.SwitchNode(ids[i])
 				}
 			})
-		w.SetContent(list)
+		w.SetContent(container.NewVBox(append([]fyne.CanvasObject{list}, objects...)...))
 		<-time.After(time.Second)
 	}
 }
