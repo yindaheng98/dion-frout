@@ -120,7 +120,7 @@ func RefreshNodeTable(cli Client) *widget.Table {
 			if i.Row == 0 {
 				button.SetText(head[i.Col])
 				button.OnTapped = func() {
-					fmt.Println("This is head")
+					log.Println("This is head")
 				}
 			} else {
 				button.SetText(nodes[i.Row-1][i.Col])
