@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
@@ -79,28 +80,43 @@ func SessionEntry(cli Client) *fyne.Container {
 func ShowNodes(a fyne.App, cli Client, objects ...fyne.CanvasObject) {
 	w := a.NewWindow("dion system")
 	log.Println("Showing nodes")
+	head := []string{
+		"NID", "Service", "DC", "RPC", "ExtraInfo",
+	}
 	for {
 		log.Println("Updating node list")
 		var ids []string
-		var nodes []discovery.Node
+		var nodes [][]string
 		for id, node := range cli.GetNodes() {
 			ids = append(ids, id)
-			nodes = append(nodes, node)
+			nodes = append(nodes, []string{
+				node.NID, node.Service, node.DC,
+				fmt.Sprintf("%+v", node.RPC),
+				fmt.Sprintf("%+v", node.ExtraInfo),
+			})
 		}
-		list := widget.NewList(
-			func() int {
-				return len(nodes)
+		list := widget.NewTable(
+			func() (int, int) {
+				return len(nodes) + 1, len(head)
 			},
 			func() fyne.CanvasObject {
 				return widget.NewButton("", func() {})
 			},
-			func(i widget.ListItemID, o fyne.CanvasObject) {
+			func(i widget.TableCellID, o fyne.CanvasObject) {
 				button := o.(*widget.Button)
-				button.SetText(ids[i])
-				button.OnTapped = func() {
-					cli.SwitchNode(ids[i])
+				if i.Row == 0 {
+					button.SetText(head[i.Col])
+					button.OnTapped = func() {
+						fmt.Println("This is head")
+					}
+				} else {
+					button.SetText(nodes[i.Row-1][i.Col])
+					button.OnTapped = func() {
+						cli.SwitchNode(ids[i.Row-1])
+					}
 				}
 			})
+		w.Resize(fyne.NewSize(800, 600))
 		w.SetContent(container.NewVBox(append(objects, list)...))
 		w.Resize(fyne.NewSize(800, 600))
 		w.Show()
