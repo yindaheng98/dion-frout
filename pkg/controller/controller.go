@@ -9,7 +9,6 @@ import (
 	"github.com/cloudwebrtc/nats-discovery/pkg/discovery"
 	pb "github.com/yindaheng98/dion/proto"
 	"log"
-	"time"
 )
 
 type Client interface {
@@ -20,13 +19,22 @@ type Client interface {
 }
 
 func Control(a fyne.App, cli Client) {
-	<-time.After(time.Second)
 	addr := GetNatsAddr(a)
 	log.Println("Connecting: ", addr)
 	if err := cli.Connect(addr); err != nil {
 		log.Fatalln(err)
 	}
-	ShowNodes(a, cli, SessionEntry(cli))
+
+	w := a.NewWindow("dion system")
+	session := SessionEntry(cli)
+	button := widget.NewButton("Refresh!", func() {})
+	refresh := func() {
+		w.SetContent(container.NewGridWithRows(2, container.NewVBox(session, button), RefreshNodeTable(cli)))
+	}
+	button.OnTapped = refresh
+	refresh()
+	w.Resize(fyne.NewSize(800, 600))
+	w.Show()
 }
 
 func GetNatsAddr(a fyne.App) string {
@@ -77,49 +85,40 @@ func SessionEntry(cli Client) *fyne.Container {
 	return box
 }
 
-func ShowNodes(a fyne.App, cli Client, objects ...fyne.CanvasObject) {
-	w := a.NewWindow("dion system")
-	log.Println("Showing nodes")
+func RefreshNodeTable(cli Client) *widget.Table {
+	log.Println("Refreshing node table")
 	head := []string{
-		"NID", "Service", "DC", "RPC", "ExtraInfo",
+		"NID", "Service", "DC", "ExtraInfo",
 	}
-	for {
-		log.Println("Updating node list")
-		var ids []string
-		var nodes [][]string
-		for id, node := range cli.GetNodes() {
-			ids = append(ids, id)
-			nodes = append(nodes, []string{
-				node.NID, node.Service, node.DC,
-				fmt.Sprintf("%+v", node.RPC),
-				fmt.Sprintf("%+v", node.ExtraInfo),
-			})
-		}
-		list := widget.NewTable(
-			func() (int, int) {
-				return len(nodes) + 1, len(head)
-			},
-			func() fyne.CanvasObject {
-				return widget.NewButton("", func() {})
-			},
-			func(i widget.TableCellID, o fyne.CanvasObject) {
-				button := o.(*widget.Button)
-				if i.Row == 0 {
-					button.SetText(head[i.Col])
-					button.OnTapped = func() {
-						fmt.Println("This is head")
-					}
-				} else {
-					button.SetText(nodes[i.Row-1][i.Col])
-					button.OnTapped = func() {
-						cli.SwitchNode(ids[i.Row-1])
-					}
+	var ids []string
+	var nodes [][]string
+	for id, node := range cli.GetNodes() {
+		ids = append(ids, id)
+		nodes = append(nodes, []string{
+			node.NID, node.Service, node.DC,
+			fmt.Sprintf("%+v", node.ExtraInfo),
+		})
+	}
+	list := widget.NewTable(
+		func() (int, int) {
+			return len(nodes) + 1, len(head)
+		},
+		func() fyne.CanvasObject {
+			return widget.NewButton("unknown unknown", func() {})
+		},
+		func(i widget.TableCellID, o fyne.CanvasObject) {
+			button := o.(*widget.Button)
+			if i.Row == 0 {
+				button.SetText(head[i.Col])
+				button.OnTapped = func() {
+					fmt.Println("This is head")
 				}
-			})
-		w.Resize(fyne.NewSize(800, 600))
-		w.SetContent(container.NewVBox(append(objects, list)...))
-		w.Resize(fyne.NewSize(800, 600))
-		w.Show()
-		<-time.After(time.Second)
-	}
+			} else {
+				button.SetText(nodes[i.Row-1][i.Col])
+				button.OnTapped = func() {
+					cli.SwitchNode(ids[i.Row-1])
+				}
+			}
+		})
+	return list
 }
