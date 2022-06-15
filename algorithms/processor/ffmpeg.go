@@ -12,21 +12,21 @@ import (
 	"os/exec"
 )
 
-type SimpleFFmpegIVFProcessorFactory struct {
+type FFmpegIVFProcessorFactory struct {
 	ffmpegPath string
 	Filter     string
 	Bandwidth  string
 }
 
-func NewSimpleFFmpegIVFProcessorFactory(ffmpegPath string) *SimpleFFmpegIVFProcessorFactory {
-	return &SimpleFFmpegIVFProcessorFactory{
+func NewFFmpegIVFProcessorFactory(ffmpegPath string) *FFmpegIVFProcessorFactory {
+	return &FFmpegIVFProcessorFactory{
 		ffmpegPath: ffmpegPath,
 		Filter:     "drawbox=x=0:y=0:w=50:h=50:c=blue",
 		Bandwidth:  "3M",
 	}
 }
 
-func (s SimpleFFmpegIVFProcessorFactory) NewProcessor() (algorithms.Processor, error) {
+func (s FFmpegIVFProcessorFactory) NewProcessor() (algorithms.Processor, error) {
 	return &SimpleFFmpegIVFProcessor{
 		ffmpegPath: s.ffmpegPath,
 		Filter:     "drawbox=x=0:y=0:w=50:h=50:c=blue",

@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/yindaheng98/dion-frout/cmd/aliyun"
+	algorithms2 "github.com/yindaheng98/dion-frout/algorithms"
 	"github.com/yindaheng98/dion/algorithms"
 	"github.com/yindaheng98/dion/pkg/isglb"
 
@@ -46,7 +46,7 @@ func main() {
 
 	log.Infof("--- starting isglb node ---")
 	node := isglb.New(func() algorithms.Algorithm {
-		return aliyun.StupidAlgorithm{}
+		return algorithms2.StupidAlgorithm{}
 	})
 	if err := node.Start(conf); err != nil {
 		log.Errorf("isglb start error: %v", err)
