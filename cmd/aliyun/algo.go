@@ -32,7 +32,6 @@ func makeDirect(s *pb.SFUStatus, session string) {
 	addTrack(s, config.ServiceNameStupid, config.ServiceStupid, session)
 }
 
-const ServiceSessionCamera = "camera"
 const ServiceNameBeijing = "beijing"
 const ServiceNameQingdao = "qingdao"
 const ServiceNameNanjing = "nanjing"
