@@ -24,8 +24,6 @@ func (s StupidAlgorithm) UpdateSFUStatus(current []*pb.SFUStatus, reports []*pb.
 				makePath(expected, s.SFU.Nid, c.Session) // 就给用户构造路径
 			} else if c.User == UserProceed { // 如果用户需要构造处理路径
 				makeProceedPath(expected, s.SFU.Nid, c.Session) // 就给用户构造处理路径
-			} else {
-				makeDirect(s, c.Session) // 默认直连
 			}
 		}
 	}
