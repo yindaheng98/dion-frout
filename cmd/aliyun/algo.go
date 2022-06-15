@@ -11,6 +11,7 @@ type StupidAlgorithm struct {
 
 const UserDirect = "direct"
 const UserPath = "path"
+const UserProceed = "proceed"
 
 func (s StupidAlgorithm) UpdateSFUStatus(current []*pb.SFUStatus, reports []*pb.QualityReport) (expected []*pb.SFUStatus) {
 	expected = current
@@ -21,6 +22,10 @@ func (s StupidAlgorithm) UpdateSFUStatus(current []*pb.SFUStatus, reports []*pb.
 				makeDirect(s, c.Session) // 就给用户直连
 			} else if c.User == UserPath { // 如果用户需要构造路径
 				makePath(expected, s.SFU.Nid, c.Session) // 就给用户构造路径
+			} else if c.User == UserProceed { // 如果用户需要构造处理路径
+				makeProceedPath(expected, s.SFU.Nid, c.Session) // 就给用户构造处理路径
+			} else {
+				makeDirect(s, c.Session) // 默认直连
 			}
 		}
 	}
@@ -29,7 +34,7 @@ func (s StupidAlgorithm) UpdateSFUStatus(current []*pb.SFUStatus, reports []*pb.
 
 // makeDirect 用于构造直连
 func makeDirect(s *pb.SFUStatus, session string) {
-	addTrack(s, config.ServiceNameStupid, config.ServiceStupid, session)
+	addForward(s, config.ServiceNameStupid, config.ServiceStupid, session, session)
 }
 
 const ServiceNameBeijing = "beijing"
@@ -52,23 +57,48 @@ func makePath(ss []*pb.SFUStatus, to, session string) {
 	}
 	for _, s := range ss { // 遍历修改所有节点以形成路径
 		if s.SFU.Nid == order[0] { // 路径上的第一个要从stupid里取视频
-			addTrack(s, config.ServiceNameStupid, config.ServiceStupid, session)
+			addForward(s, config.ServiceNameStupid, config.ServiceStupid, session, session)
 		} else {
 			for j := 1; j < i; j++ {
 				if s.SFU.Nid == order[j] { // 路径上的后一个从前一个里取视频
-					addTrack(s, order[j-1], config.ServiceSXU, session)
+					addForward(s, order[j-1], config.ServiceSXU, session, session)
 				}
 			}
 		}
 	}
 }
 
-// addTrack 将某个track添加到ForwardTracks里
-func addTrack(s *pb.SFUStatus, nid, service, session string) {
+const ServiceSessionProceed = "proceed"
+
+// makeProceedPath 用于构造带处理过程的路径
+func makeProceedPath(ss []*pb.SFUStatus, to, session string) {
+	i := 0
+	for i = range order {
+		if to == order[i] { // 先看看这是路径上的第几个
+			break
+		}
+	}
+	for _, s := range ss { // 遍历修改所有节点以形成路径
+		if s.SFU.Nid == order[0] { // 路径上的第一个要从stupid里取视频
+			addForward(s, config.ServiceNameStupid, config.ServiceStupid, session, session)
+			addProceed(s, session, ServiceSessionProceed) // 并加上处理过程
+		} else {
+			for j := 1; j < i; j++ {
+				if s.SFU.Nid == order[j] { // 路径上的后一个从前一个里取视频
+					addForward(s, order[j-1], config.ServiceSXU, ServiceSessionProceed, session)
+					addProceed(s, session, ServiceSessionProceed) // 并加上处理过程
+				}
+			}
+		}
+	}
+}
+
+// addForward 将某个track添加到ForwardTracks里
+func addForward(s *pb.SFUStatus, nid, service, src, dst string) {
 	for _, t := range s.ForwardTracks {
 		if t.Src.Service == service && t.Src.Nid == nid {
-			t.RemoteSessionId = session
-			t.LocalSessionId = session
+			t.RemoteSessionId = src
+			t.LocalSessionId = dst
 			return
 		}
 	}
@@ -78,7 +108,20 @@ func addTrack(s *pb.SFUStatus, nid, service, session string) {
 			Nid:     nid,
 			Service: service,
 		},
-		RemoteSessionId: session,
-		LocalSessionId:  session,
+		RemoteSessionId: src,
+		LocalSessionId:  dst,
+	})
+}
+
+func addProceed(s *pb.SFUStatus, src, dst string) {
+	for _, t := range s.ProceedTracks {
+		if len(t.SrcSessionIdList) == 1 && t.SrcSessionIdList[0] == src {
+			t.DstSessionId = dst
+			return
+		}
+	}
+	s.ProceedTracks = append(s.ProceedTracks, &pb.ProceedTrack{
+		SrcSessionIdList: []string{src},
+		DstSessionId:     dst,
 	})
 }
