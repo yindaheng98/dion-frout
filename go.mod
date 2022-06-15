@@ -4,7 +4,9 @@ go 1.18
 
 require (
 	fyne.io/fyne/v2 v2.1.4
-	github.com/cloudwebrtc/nats-discovery v0.3.0
+	github.com/cloudwebrtc/nats-discovery v0.3.1-0.20220606064146-a4d1fce8e387
+	github.com/pion/ion v1.10.0
+	github.com/pion/ion-log v1.2.2
 	github.com/pion/webrtc/v3 v3.1.25
 	github.com/yindaheng98/dion v1.2.2-0.20220603144300-a49f156146eb
 )
@@ -48,8 +50,6 @@ require (
 	github.com/pion/dtls/v2 v2.1.3 // indirect
 	github.com/pion/ice/v2 v2.2.2 // indirect
 	github.com/pion/interceptor v0.1.10 // indirect
-	github.com/pion/ion v1.10.0 // indirect
-	github.com/pion/ion-log v1.2.2 // indirect
 	github.com/pion/ion-sfu v1.11.0 // indirect
 	github.com/pion/logging v0.2.2 // indirect
 	github.com/pion/mdns v0.0.5 // indirect
@@ -99,7 +99,5 @@ require (
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
 )
-
-replace github.com/cloudwebrtc/nats-discovery v0.3.0 => github.com/yindaheng98/nats-discovery v0.3.1-0.20220601014014-e6a5369ace55
 
 replace github.com/pion/ion-sfu v1.11.0 => github.com/yindaheng98/ion-sfu v1.11.1-0.20220521131211-10a33cc613d5
