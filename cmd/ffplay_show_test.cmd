@@ -1,0 +1,1 @@
+.\ffplay.exe -f lavfi -i 'testsrc=size=1280x720:rate=30' -vf "drawtext=fontfile=arial.ttf:text='%{localtime\:%Y-%m-%d %H.%M.%S}':fontsize=60:x=(w-text_w)/2:y=0"
