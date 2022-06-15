@@ -1,5 +1,5 @@
 GO_LDFLAGS = -ldflags "-s -w"
-GO_VERSION = 1.16
+GO_VERSION = 1.18
 
 init:
 	apt-get install -y ffmpeg
@@ -9,6 +9,10 @@ init:
 
 cmd: init
 	go build -o dion-frout $(GO_LDFLAGS) github.com/yindaheng98/dion-frout/cmd
+isglb: init
+	go build -o isglb $(GO_LDFLAGS) github.com/yindaheng98/dion-frout/isglb
+sxu: init
+	go build -o sxu $(GO_LDFLAGS) github.com/yindaheng98/dion-frout/sxu
 
 all: cmd
 
