@@ -1,0 +1,9 @@
+[global]
+# data center id
+dc = "dc1"
+
+[log]
+level = "info"
+
+[nats]
+url = "nats://8.131.50.230:4222"
