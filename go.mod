@@ -5,18 +5,18 @@ go 1.18
 require (
 	fyne.io/fyne/v2 v2.1.4
 	github.com/cloudwebrtc/nats-discovery v0.3.1-0.20220606064146-a4d1fce8e387
+	github.com/cloudwebrtc/nats-grpc v1.0.0
 	github.com/pion/ion v1.10.0
 	github.com/pion/ion-log v1.2.2
 	github.com/pion/ion-sfu v1.11.0
 	github.com/pion/webrtc/v3 v3.1.25
-	github.com/yindaheng98/dion v1.2.2-0.20220616085011-4c26892fa318
+	github.com/yindaheng98/dion v1.2.2-0.20220616093409-6cc3f83dec16
 )
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bep/debounce v1.2.0 // indirect
 	github.com/cespare/xxhash/v2 v2.1.1 // indirect
-	github.com/cloudwebrtc/nats-grpc v1.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
 	github.com/fredbi/uri v0.0.0-20181227131451-3dcfdacbaaf3 // indirect
