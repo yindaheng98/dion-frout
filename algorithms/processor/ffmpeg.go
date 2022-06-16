@@ -58,10 +58,14 @@ func WriteIVFRemoteToStdin(remote *webrtc.TrackRemote, stdin io.WriteCloser, ffm
 		return err
 	}
 	go func(remote *webrtc.TrackRemote, ivfWriter *ivfwriter.IVFWriter, OnBroken func(error)) {
+		i := 0
 		for {
 			// Read RTP packets being sent to Pion
 			rtp, _, readErr := remote.ReadRTP()
-			fmt.Println(remote.ID(), remote.StreamID(), "Read RTP Packet from SFU TrackRemote")
+			i += 1
+			if i%30 == 0 {
+				log.Debugf("%s %s Read RTP Packet from SFU TrackRemote", remote.ID(), remote.StreamID())
+			}
 			if readErr != nil {
 				if err := ffmpeg.Process.Kill(); err != nil {
 					log.Errorf("Cannot kill: %+v", err)
