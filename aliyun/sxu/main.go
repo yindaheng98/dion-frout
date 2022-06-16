@@ -34,7 +34,7 @@ func main() {
 	var id, ffmpeg, bandwidth, filter string
 	flag.StringVar(&id, "id", "sxu-"+util.RandomString(8), "id of sxu")
 	flag.StringVar(&ffmpeg, "ffmpeg", "ffmpeg", "path to ffmpeg executable")
-	flag.StringVar(&bandwidth, "bandwith", "bandwith", "encode bandwidth")
+	flag.StringVar(&bandwidth, "bandwith", "3M", "encode bandwidth")
 	flag.StringVar(&filter, "filter", "drawtext=text='%{localtime\\:%Y-%m-%d %H.%M.%S}':fontsize=60:x=(w-text_w)/2:y=0", "ffmpeg -vf ???")
 	flag.StringVar(&file, "c", "aliyun/conf/beijing.sfu.toml", "config file")
 	help := flag.Bool("h", false, "help info")

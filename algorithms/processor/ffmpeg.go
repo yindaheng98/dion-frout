@@ -29,8 +29,8 @@ func NewFFmpegIVFProcessorFactory(ffmpegPath string) *FFmpegIVFProcessorFactory 
 func (s FFmpegIVFProcessorFactory) NewProcessor() (algorithms.Processor, error) {
 	return &SimpleFFmpegIVFProcessor{
 		ffmpegPath: s.ffmpegPath,
-		Filter:     "drawbox=x=0:y=0:w=50:h=50:c=blue",
-		Bandwidth:  "3M",
+		Filter:     s.Filter,
+		Bandwidth:  s.Bandwidth,
 	}, nil
 }
 

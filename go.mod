@@ -102,4 +102,4 @@ require (
 	nhooyr.io/websocket v1.8.6 // indirect
 )
 
-replace github.com/pion/ion-sfu v1.11.0 => github.com/yindaheng98/ion-sfu v1.11.1-0.20220521131211-10a33cc613d5
+replace github.com/pion/ion-sfu v1.11.0 => github.com/yindaheng98/ion-sfu v1.11.1-0.20220616110955-d999bd691c22

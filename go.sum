@@ -772,8 +772,8 @@ github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q
 github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77/go.mod h1:aYKd//L2LvnjZzWKhF00oedf4jCCReLcmhLdhm1A27Q=
 github.com/yindaheng98/dion v1.2.2-0.20220616093409-6cc3f83dec16 h1:YCHI5ZT9zXyjRgMZxcFUBVNPMt7XIMBEmS3GOgHlr7s=
 github.com/yindaheng98/dion v1.2.2-0.20220616093409-6cc3f83dec16/go.mod h1:DmbAmFtNLsA7nLXvOLMWhY4nAp5LxkLR5Rdhe/2Relk=
-github.com/yindaheng98/ion-sfu v1.11.1-0.20220521131211-10a33cc613d5 h1:jbkD0rAGpXF/hW+7vtjwgrKAeX3j6QOczES2VTkeN+g=
-github.com/yindaheng98/ion-sfu v1.11.1-0.20220521131211-10a33cc613d5/go.mod h1:FJ41uuR5Cxwh3CMVw85geBr1OgX1vPHHRr8UsC6CwaE=
+github.com/yindaheng98/ion-sfu v1.11.1-0.20220616110955-d999bd691c22 h1:9dcP5xGrH5jA9BG3+MH56LmK9rEYe59Wn5EYiHc4/8Q=
+github.com/yindaheng98/ion-sfu v1.11.1-0.20220616110955-d999bd691c22/go.mod h1:FJ41uuR5Cxwh3CMVw85geBr1OgX1vPHHRr8UsC6CwaE=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.32/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
