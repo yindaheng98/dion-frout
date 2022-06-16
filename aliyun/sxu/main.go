@@ -9,6 +9,7 @@ import (
 	"github.com/yindaheng98/dion/pkg/sfu"
 	"github.com/yindaheng98/dion/pkg/sxu"
 	"github.com/yindaheng98/dion/pkg/sxu/syncer"
+	"github.com/yindaheng98/dion/util"
 
 	"os"
 	"os/signal"
@@ -30,7 +31,8 @@ func showHelp() {
 }
 
 func main() {
-	var ffmpeg, bandwidth, filter string
+	var id, ffmpeg, bandwidth, filter string
+	flag.StringVar(&id, "id", "sxu-"+util.RandomString(8), "id of sxu")
 	flag.StringVar(&ffmpeg, "ffmpeg", "ffmpeg", "path to ffmpeg executable")
 	flag.StringVar(&ffmpeg, "bandwith", "bandwith", "encode bandwidth")
 	flag.StringVar(&filter, "filter", "drawtext=text='%{localtime\\:%Y-%m-%d %H.%M.%S}':fontsize=60:x=(w-text_w)/2:y=0", "ffmpeg -vf ???")
@@ -52,7 +54,7 @@ func main() {
 	log.Init(conf.Log.Level)
 
 	log.Infof("--- starting isglb node ---")
-	node := sxu.New(sxu.NewDefaultToolBoxBuilder(func(box *syncer.ToolBox, node *islb.Node, i *sfu2.SFU) {
+	node := sxu.NewWithID(id, sxu.NewDefaultToolBoxBuilder(func(box *syncer.ToolBox, node *islb.Node, i *sfu2.SFU) {
 		f := processor.NewFFmpegIVFProcessorFactory(ffmpeg)
 		f.Filter = filter
 		f.Bandwidth = bandwidth
