@@ -36,7 +36,7 @@ func main() {
 	flag.StringVar(&ffmpeg, "ffmpeg", "ffmpeg", "path to ffmpeg executable")
 	flag.StringVar(&ffmpeg, "bandwith", "bandwith", "encode bandwidth")
 	flag.StringVar(&filter, "filter", "drawtext=text='%{localtime\\:%Y-%m-%d %H.%M.%S}':fontsize=60:x=(w-text_w)/2:y=0", "ffmpeg -vf ???")
-	flag.StringVar(&file, "c", "cmd/sxu/sfu.toml", "config file")
+	flag.StringVar(&file, "c", "aliyun/conf/beijing.sfu.toml", "config file")
 	help := flag.Bool("h", false, "help info")
 	flag.Parse()
 	if *help {

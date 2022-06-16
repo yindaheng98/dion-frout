@@ -66,7 +66,7 @@ func makePath(ss []*pb.SFUStatus, to, session string) {
 	}
 }
 
-const ServiceSessionProceed = "proceed"
+const ServiceSessionUnProceed = "unproceed"
 
 // makeProceedPath 用于构造带处理过程的路径
 func makeProceedPath(ss []*pb.SFUStatus, to, session string) {
@@ -78,13 +78,13 @@ func makeProceedPath(ss []*pb.SFUStatus, to, session string) {
 	}
 	for _, s := range ss { // 遍历修改所有节点以形成路径
 		if s.SFU.Nid == order[0] { // 路径上的第一个要从stupid里取视频
-			addForward(s, config.ServiceNameStupid, config.ServiceStupid, session, session)
-			addProceed(s, session, ServiceSessionProceed) // 并加上处理过程
+			addForward(s, config.ServiceNameStupid, config.ServiceStupid, session, ServiceSessionUnProceed)
+			addProceed(s, ServiceSessionUnProceed, session) // 并加上处理过程
 		} else {
 			for j := 1; j < i; j++ {
 				if s.SFU.Nid == order[j] { // 路径上的后一个从前一个里取视频
-					addForward(s, order[j-1], config.ServiceSXU, ServiceSessionProceed, session)
-					addProceed(s, session, ServiceSessionProceed) // 并加上处理过程
+					addForward(s, order[j-1], config.ServiceSXU, session, ServiceSessionUnProceed)
+					addProceed(s, ServiceSessionUnProceed, session) // 并加上处理过程
 				}
 			}
 		}
