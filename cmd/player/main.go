@@ -4,14 +4,12 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"github.com/cloudwebrtc/nats-discovery/pkg/discovery"
 	log "github.com/pion/ion-log"
-	"github.com/pion/ion/pkg/proto"
 	"github.com/pion/webrtc/v3"
 	"github.com/pion/webrtc/v3/pkg/media/ivfwriter"
+	"github.com/yindaheng98/dion-frout/algorithms"
+	"github.com/yindaheng98/dion-frout/pkg/player"
 	"github.com/yindaheng98/dion/config"
-	"github.com/yindaheng98/dion/pkg/islb"
-	"github.com/yindaheng98/dion/pkg/sfu"
 	pb "github.com/yindaheng98/dion/proto"
 	"github.com/yindaheng98/dion/util"
 	"io"
@@ -36,9 +34,9 @@ func showHelp() {
 func main() {
 	var ffplay, nid, sid, uid string
 	flag.StringVar(&ffplay, "ffplay", "ffplay", "path to ffplay executable")
-	flag.StringVar(&nid, "nid", "stupid", "target node id")
-	flag.StringVar(&sid, "sid", "camera", "target session id")
-	flag.StringVar(&uid, "uid", util.RandomString(8), "your user id")
+	flag.StringVar(&nid, "nid", "beijing", "target node id")
+	flag.StringVar(&sid, "sid", config.ServiceSessionStupid, "target session id")
+	flag.StringVar(&uid, "uid", algorithms.UserDirect, "your user id")
 	flag.StringVar(&file, "c", "aliyun/conf/islb.toml", "config file")
 	help := flag.Bool("h", false, "help info")
 	flag.Parse()
@@ -56,37 +54,8 @@ func main() {
 
 	log.Init(conf.Log.Level)
 
-	node := islb.NewNode("sxu-" + util.RandomString(6))
-
-	err = node.Start(conf.Nats.URL)
-	if err != nil {
-		panic(err)
-	}
-	//重要！！！必须开启了Watch才能自动地关闭NATS GRPC连接.
-	go func() {
-		err := node.Watch(proto.ServiceALL)
-		if err != nil {
-			log.Errorf("Node.Watch(proto.ServiceALL) error %v", err)
-		}
-	}()
-	//重要！！！必须开启了KeepAlive才能在退出时让服务端那边自动地关闭NATS GRPC连接.
-	go func() {
-		err := node.KeepAlive(discovery.Node{
-			DC:      conf.Global.Dc,
-			Service: "test",
-			NID:     node.NID,
-			RPC: discovery.RPC{
-				Protocol: discovery.NGRPC,
-				Addr:     conf.Nats.URL,
-				//Params:   map[string]string{"username": "foo", "password": "bar"},
-			},
-		})
-		if err != nil {
-			log.Errorf("isglb.Node.KeepAlive(%v) error %v", node.NID, err)
-		}
-	}()
-	sub := sfu.NewSubscriber(&node)
-	sub.OnTrack = func(remote *webrtc.TrackRemote, receiver *webrtc.RTPReceiver) {
+	sub := player.NewPlayer(conf.Nats.URL)
+	sub.OnTrack(func(remote *webrtc.TrackRemote, receiver *webrtc.RTPReceiver) {
 		log.Infof("OnTrack started: %+v\n", remote)
 		ffplay := exec.Command(ffplay, "-f", "ivf", "-i", "pipe:0")
 		stdin, stdout, err := util.GetStdPipes(ffplay)
@@ -119,7 +88,8 @@ func main() {
 				return
 			}
 		}
-	}
+	})
+	sub.Connect()
 	sub.Switch(nid, map[string]interface{}{}, &pb.ClientNeededSession{
 		Session: sid,
 		User:    uid,
