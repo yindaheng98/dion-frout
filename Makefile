@@ -8,16 +8,16 @@ init:
 	go mod tidy
 
 cmd: init
-	go build -o dion-frout $(GO_LDFLAGS) github.com/yindaheng98/dion-frout/cmd
+	go build -o bin/dion-frout $(GO_LDFLAGS) github.com/yindaheng98/dion-frout/cmd
 isglb: init
-	go build -o isglb $(GO_LDFLAGS) github.com/yindaheng98/dion-frout/cmd/aliyun/isglb
+	go build -o bin/isglb $(GO_LDFLAGS) github.com/yindaheng98/dion-frout/cmd/aliyun/isglb
 sxu: init
-	go build -o sxu $(GO_LDFLAGS) github.com/yindaheng98/dion-frout/cmd/aliyun/sxu
+	go build -o bin/sxu $(GO_LDFLAGS) github.com/yindaheng98/dion-frout/cmd/aliyun/sxu
 
-all: cmd isglb sxu
+all: cmd bin/isglb bin/sxu
 
 clean:
-	rm -f dion-frout
+	rm -rf bin/
 
 PROXY = http://192.168.1.2:10801
 docker-build:
