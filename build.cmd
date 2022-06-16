@@ -1,1 +1,0 @@
-docker run --rm -e HTTP_PROXY="http://192.168.1.2:10801" -e HTTPS_PROXY="http://192.168.1.2:10801" -v "$(pwd):/dion-frout" golang:1.18-buster sh -c 'apt update && apt install -y make && cd /dion-frout && make server'
