@@ -34,9 +34,9 @@ func showHelp() {
 func main() {
 	var ffplay, nid, sid, uid string
 	flag.StringVar(&ffplay, "ffplay", "ffplay", "path to ffplay executable")
-	flag.StringVar(&nid, "nid", algorithms.ServiceNameBeijing, "target node id")
+	flag.StringVar(&nid, "nid", algorithms.ServiceNameNanjing, "target node id")
 	flag.StringVar(&sid, "sid", config.ServiceSessionStupid, "target session id")
-	flag.StringVar(&uid, "uid", algorithms.UserProceed, "your user id")
+	flag.StringVar(&uid, "uid", algorithms.UserDirect, "your user id")
 	flag.StringVar(&file, "c", "aliyun/conf/islb.toml", "config file")
 	help := flag.Bool("h", false, "help info")
 	flag.Parse()

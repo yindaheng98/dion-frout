@@ -19,8 +19,8 @@ sxu -c /root/beijing.sfu.toml -id beijing -filter "drawtext=text='beijing %{loca
 
 # 在青岛运行
 chmod +x /bin/*
-sxu -c /root/qingdao.sfu.toml -id beijing -filter "drawtext=text='qingdao %{localtime\:%Y-%m-%d %H.%M.%S}':fontsize=60:x=(w-text_w)/2:y=(h-text_h)/2"
+sxu -c /root/qingdao.sfu.toml -id qingdao -filter "drawtext=text='qingdao %{localtime\:%Y-%m-%d %H.%M.%S}':fontsize=60:x=(w-text_w)/2:y=(h-text_h)/2"
 
 # 在南京运行
 chmod +x /bin/*
-sxu -c /root/nanjing.sfu.toml -id beijing -filter "drawtext=text='nanjing %{localtime\:%Y-%m-%d %H.%M.%S}':fontsize=60:x=(w-text_w)/2:y=h-text_h"
+sxu -c /root/nanjing.sfu.toml -id nanjing -filter "drawtext=text='nanjing %{localtime\:%Y-%m-%d %H.%M.%S}':fontsize=60:x=(w-text_w)/2:y=h-text_h"
