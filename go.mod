@@ -10,7 +10,7 @@ require (
 	github.com/pion/ion-log v1.2.2
 	github.com/pion/ion-sfu v1.11.0
 	github.com/pion/webrtc/v3 v3.1.25
-	github.com/yindaheng98/dion v1.2.2-0.20220616093409-6cc3f83dec16
+	github.com/yindaheng98/dion v1.2.2-0.20220617020309-07b05f1322c2
 )
 
 require (

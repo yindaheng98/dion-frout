@@ -34,9 +34,9 @@ func showHelp() {
 func main() {
 	var ffplay, nid, sid, uid string
 	flag.StringVar(&ffplay, "ffplay", "ffplay", "path to ffplay executable")
-	flag.StringVar(&nid, "nid", algorithms.ServiceNameNanjing, "target node id")
+	flag.StringVar(&nid, "nid", algorithms.ServiceNameQingdao, "target node id")
 	flag.StringVar(&sid, "sid", config.ServiceSessionStupid, "target session id")
-	flag.StringVar(&uid, "uid", algorithms.UserDirect, "your user id")
+	flag.StringVar(&uid, "uid", algorithms.UserPath, "your user id")
 	flag.StringVar(&file, "c", "aliyun/conf/islb.toml", "config file")
 	help := flag.Bool("h", false, "help info")
 	flag.Parse()
@@ -54,8 +54,8 @@ func main() {
 
 	log.Init(conf.Log.Level)
 
-	sub := player.NewPlayer(conf.Nats.URL)
-	sub.OnTrack(func(remote *webrtc.TrackRemote, receiver *webrtc.RTPReceiver) {
+	sub := player.NewPlayer()
+	sub.OnTrack = func(remote *webrtc.TrackRemote, receiver *webrtc.RTPReceiver) {
 		log.Infof("OnTrack started: %+v\n", remote)
 		ffplay := exec.Command(ffplay, "-f", "ivf", "-i", "pipe:0")
 		stdin, stdout, err := util.GetStdPipes(ffplay)
@@ -88,8 +88,8 @@ func main() {
 				return
 			}
 		}
-	})
-	sub.Connect()
+	}
+	sub.Start(conf)
 	sub.Switch(nid, map[string]interface{}{}, &pb.ClientNeededSession{
 		Session: sid,
 		User:    uid,

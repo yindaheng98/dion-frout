@@ -1,6 +1,7 @@
 package algorithms
 
 import (
+	"fmt"
 	"github.com/pion/ion/proto/ion"
 	"github.com/yindaheng98/dion/config"
 	pb "github.com/yindaheng98/dion/proto"
@@ -14,6 +15,7 @@ const UserPath = "path"
 const UserProceed = "proceed"
 
 func (s StupidAlgorithm) UpdateSFUStatus(current []*pb.SFUStatus, reports []*pb.QualityReport) (expected []*pb.SFUStatus) {
+	fmt.Printf("Current: %+v\n", current)
 	expected = current
 	for _, s := range expected {
 		for _, c := range s.Clients {
@@ -27,6 +29,7 @@ func (s StupidAlgorithm) UpdateSFUStatus(current []*pb.SFUStatus, reports []*pb.
 			}
 		}
 	}
+	fmt.Printf("Expected: %+v\n", expected)
 	return
 }
 
@@ -57,7 +60,7 @@ func makePath(ss []*pb.SFUStatus, to, session string) {
 		if s.SFU.Nid == order[0] { // 路径上的第一个要从stupid里取视频
 			addForward(s, config.ServiceNameStupid, config.ServiceStupid, session, session)
 		} else {
-			for j := 1; j < i; j++ {
+			for j := 1; j <= i; j++ {
 				if s.SFU.Nid == order[j] { // 路径上的后一个从前一个里取视频
 					addForward(s, order[j-1], config.ServiceSXU, session, session)
 				}
@@ -81,7 +84,7 @@ func makeProceedPath(ss []*pb.SFUStatus, to, session string) {
 			addForward(s, config.ServiceNameStupid, config.ServiceStupid, session, ServiceSessionUnProceed)
 			addProceed(s, ServiceSessionUnProceed, session) // 并加上处理过程
 		} else {
-			for j := 1; j < i; j++ {
+			for j := 1; j <= i; j++ {
 				if s.SFU.Nid == order[j] { // 路径上的后一个从前一个里取视频
 					addForward(s, order[j-1], config.ServiceSXU, session, ServiceSessionUnProceed)
 					addProceed(s, ServiceSessionUnProceed, session) // 并加上处理过程
