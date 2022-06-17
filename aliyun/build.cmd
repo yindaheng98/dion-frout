@@ -11,6 +11,7 @@ scp aliyun/conf/* root@47.122.1.50:/root
 
 # 在北京运行
 docker run --name nats --restart always --network host -d nats
+apt-get install ffmpeg
 chmod +x /bin/*
 islb -c /root/islb.toml
 stupid -conf /root/stupid.sfu.toml -filter "drawbox=x=0:y=0:w=50:h=50:c=blue"
@@ -18,9 +19,13 @@ isglb -c /root/islb.toml
 sxu -c /root/beijing.sfu.toml -id beijing -filter "drawtext=text='beijing %{localtime\:%Y-%m-%d %H.%M.%S}':fontsize=60:x=(w-text_w)/2:y=0"
 
 # 在青岛运行
+apt-get update
+apt-get install -y ffmpeg
 chmod +x /bin/*
 sxu -c /root/qingdao.sfu.toml -id qingdao -filter "drawtext=text='qingdao %{localtime\:%Y-%m-%d %H.%M.%S}':fontsize=60:x=(w-text_w)/2:y=(h-text_h)/2"
 
 # 在南京运行
+apt-get update
+apt-get install -y ffmpeg
 chmod +x /bin/*
 sxu -c /root/nanjing.sfu.toml -id nanjing -filter "drawtext=text='nanjing %{localtime\:%Y-%m-%d %H.%M.%S}':fontsize=60:x=(w-text_w)/2:y=h-text_h"
