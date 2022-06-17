@@ -12,7 +12,8 @@ type StupidAlgorithm struct {
 
 const UserDirect = "direct"
 const UserPath = "path"
-const UserProceed = "proceed"
+const UserDirectProceed = "dproceed"
+const UserPathProceed = "pproceed"
 
 func (s StupidAlgorithm) UpdateSFUStatus(current []*pb.SFUStatus, reports []*pb.QualityReport) (expected []*pb.SFUStatus) {
 	fmt.Printf("Current: %+v\n", current)
@@ -28,7 +29,9 @@ func (s StupidAlgorithm) UpdateSFUStatus(current []*pb.SFUStatus, reports []*pb.
 				makeDirect(s, c.Session) // 就给用户直连
 			} else if c.User == UserPath { // 如果用户需要构造路径
 				makePath(expected, s.SFU.Nid, c.Session) // 就给用户构造路径
-			} else if c.User == UserProceed { // 如果用户需要构造处理路径
+			} else if c.User == UserDirectProceed { // 如果用户需要构造处理路径
+				makeProceed(s, c.Session) // 就给用户构造处理路径
+			} else if c.User == UserPathProceed { // 如果用户需要构造处理路径
 				makeProceedPath(expected, s.SFU.Nid, c.Session) // 就给用户构造处理路径
 			}
 		}
@@ -40,6 +43,12 @@ func (s StupidAlgorithm) UpdateSFUStatus(current []*pb.SFUStatus, reports []*pb.
 // makeDirect 用于构造直连
 func makeDirect(s *pb.SFUStatus, session string) {
 	addForward(s, config.ServiceNameStupid, config.ServiceStupid, session, session)
+}
+
+// makeDirect 用于构造直连处理过程
+func makeProceed(s *pb.SFUStatus, session string) {
+	addForward(s, config.ServiceNameStupid, config.ServiceStupid, session, ServiceSessionUnProceed)
+	addProceed(s, ServiceSessionUnProceed, session)
 }
 
 const ServiceNameBeijing = "beijing"
