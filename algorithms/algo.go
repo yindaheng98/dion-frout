@@ -17,6 +17,10 @@ const UserProceed = "proceed"
 func (s StupidAlgorithm) UpdateSFUStatus(current []*pb.SFUStatus, reports []*pb.QualityReport) (expected []*pb.SFUStatus) {
 	fmt.Printf("Current: %+v\n", current)
 	expected = current
+	for _, s := range expected { // 首先清除无用的转发规则
+		s.ForwardTracks = nil
+		s.ProceedTracks = nil
+	}
 	for _, s := range expected {
 		for _, c := range s.Clients {
 			// 以user为标记
