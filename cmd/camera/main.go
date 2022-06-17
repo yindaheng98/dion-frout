@@ -92,6 +92,7 @@ func main() {
 		"-f", "dshow",
 		"-i", "video=" + device,
 		"-vcodec", "libvpx",
+		"-g", "24",
 		"-b:v", "3M",
 		"-f", "ivf",
 		"pipe:1",
