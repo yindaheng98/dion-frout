@@ -31,11 +31,12 @@ func showHelp() {
 }
 
 func main() {
-	var ffmpeg, ffplay, device, nid, sid, uid string
+	var ffmpeg, ffplay, format, input, nid, sid, uid string
 	flag.StringVar(&ffmpeg, "ffmpeg", "ffmpeg", "path to ffmpeg executable")
 	flag.StringVar(&ffplay, "ffplay", "ffplay", "path to ffplay executable")
-	flag.StringVar(&device, "device",
-		"@device_pnp_\\\\?\\usb#vid_2bdf&pid_028a&mi_00#6&1d424522&0&0000#{65e8773d-8f56-11d0-a3b9-00a0c9223196}\\global",
+	flag.StringVar(&format, "f", "dshow", "video format")
+	flag.StringVar(&input, "i",
+		"video=@device_pnp_\\\\?\\usb#vid_2bdf&pid_028a&mi_00#6&1d424522&0&0000#{65e8773d-8f56-11d0-a3b9-00a0c9223196}\\global",
 		"device id of your camera (use 'ffmpeg -list_devices true -f dshow -i dummy' to show it)")
 	flag.StringVar(&nid, "nid", "stupid", "target node id")
 	flag.StringVar(&sid, "sid", "camera", "target session id")
@@ -89,8 +90,8 @@ func main() {
 	pub := sfu.NewPublisher(&node)
 	// Create a video track
 	videoopt := []string{
-		"-f", "dshow",
-		"-i", "video=" + device,
+		"-f", format,
+		"-i", input,
 		"-vcodec", "libvpx",
 		"-g", "24",
 		"-b:v", "3M",
